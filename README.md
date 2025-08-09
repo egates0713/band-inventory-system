@@ -1,5 +1,6 @@
-# band-inventory-system
-Professional inventory management system for band directors with Google Drive sync
+# 🎵 Band Inventory System
+
+Professional inventory management system designed specifically for band directors and music teachers.
 
 ## ✨ Features
 
