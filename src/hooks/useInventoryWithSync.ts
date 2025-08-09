@@ -51,6 +51,7 @@ export const useInventoryWithSync = () => {
 
   // Initialize and load data
   useEffect(() => {
+    // Only run on client side
     if (typeof window === 'undefined') {
       setLoading(false);
       return;
@@ -58,8 +59,10 @@ export const useInventoryWithSync = () => {
 
     const initializeSync = async () => {
       try {
+        // Load local data first
         loadLocalData();
 
+        // Try to initialize Google Drive sync
         const googleDriveSync = await getGoogleDriveSync();
         if (googleDriveSync) {
           await googleDriveSync.initialize();
@@ -68,6 +71,7 @@ export const useInventoryWithSync = () => {
         }
       } catch (error) {
         console.error('Error initializing sync:', error);
+        // Fallback to local data only
         loadLocalData();
       }
     };
@@ -80,6 +84,7 @@ export const useInventoryWithSync = () => {
     if (syncStatus.isSignedIn && !syncStatus.isLoading) {
       checkAndRestoreFromCloud();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [syncStatus.isSignedIn, syncStatus.isLoading]);
 
   // Load data from localStorage
@@ -111,6 +116,7 @@ export const useInventoryWithSync = () => {
         const localSyncTime = lastLocalSync ? new Date(lastLocalSync) : new Date(0);
         const cloudSyncTime = syncStatus.lastSync || new Date();
 
+        // If cloud data is newer, use it
         if (cloudSyncTime > localSyncTime) {
           setData(cloudData);
           saveToLocal(cloudData);
@@ -125,9 +131,11 @@ export const useInventoryWithSync = () => {
   // Save data to localStorage and cloud
   const saveData = useCallback(async (newData: InventoryData) => {
     try {
+      // Save locally first (immediate feedback)
       saveToLocal(newData);
       setData(newData);
 
+      // Save to cloud if signed in
       if (syncStatus.isSignedIn) {
         const googleDriveSync = await getGoogleDriveSync();
         if (googleDriveSync) {
@@ -218,7 +226,7 @@ export const useInventoryWithSync = () => {
     return false;
   };
 
-  // All the inventory management functions (same as useInventory)
+  // Inventory Items
   const addItem = useCallback((item: Omit<InventoryItem, 'id' | 'barcode' | 'createdAt' | 'updatedAt' | 'isRented'>) => {
     const newItem: InventoryItem = {
       ...item,
@@ -258,6 +266,7 @@ export const useInventoryWithSync = () => {
     saveData(newData);
   }, [data, saveData]);
 
+  // Students
   const addStudent = useCallback((student: Omit<Student, 'id' | 'createdAt'>) => {
     const newStudent: Student = {
       ...student,
@@ -292,6 +301,7 @@ export const useInventoryWithSync = () => {
     saveData(newData);
   }, [data, saveData]);
 
+  // Rentals
   const rentItem = useCallback((itemId: string, studentId: string, expectedReturnDate?: string, notes?: string) => {
     const rental: Rental = {
       id: generateId(),
@@ -341,6 +351,7 @@ export const useInventoryWithSync = () => {
     saveData(newData);
   }, [data, saveData]);
 
+  // Statistics
   const getStats = useCallback((): InventoryStats => {
     const totalItems = data.items.length;
     const rentedItems = data.items.filter(item => item.isRented).length;
@@ -359,6 +370,7 @@ export const useInventoryWithSync = () => {
     };
   }, [data]);
 
+  // Get enriched rental data (with item and student info)
   const getActiveRentals = useCallback(() => {
     return data.rentals
       .filter(rental => rental.isActive)
