@@ -213,7 +213,7 @@ export function BarcodeGenerator() {
                   <TableHead className="w-12">
                     <Checkbox
                       checked={filteredItems.length > 0 && selectedItems.length === filteredItems.length}
-                      onCheckedChange={handleSelectAll}
+                      onCheckedChange={(checked: boolean) => handleSelectAll(checked)}
                     />
                   </TableHead>
                   <TableHead>Item</TableHead>
@@ -229,7 +229,7 @@ export function BarcodeGenerator() {
                     <TableCell>
                       <Checkbox
                         checked={selectedItems.includes(item.id)}
-                        onCheckedChange={(checked) => handleSelectItem(item.id, checked as boolean)}
+                        onCheckedChange={(checked: boolean) => handleSelectItem(item.id, checked)}
                       />
                     </TableCell>
                     <TableCell>
