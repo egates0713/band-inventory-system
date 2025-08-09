@@ -1,4 +1,3 @@
-// README.md
 # 🎵 Band Inventory System
 
 A professional inventory management system designed specifically for band directors and music teachers. Features barcode generation, rental tracking, student management, and cloud sync capabilities.
